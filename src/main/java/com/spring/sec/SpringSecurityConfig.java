@@ -11,6 +11,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+
+/**
+ * This class contains the configurations for 2 authentication tyopes in Spring.
+ * In memory authentication - to test it uncomment the methos from line 48
+ * Jdbc authentication- to test comment, in memry auth configuration and uncomment
+ * code from line 59.
+ */
 
 
 @Configuration
@@ -20,7 +28,22 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     PersonUserDetailsService personUserDetailsService;
 
-  /*// Create 2 users for demo
+    @Autowired
+    private AuthenticationEntryPoint authEntryPoint;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
+
+        // All requests send to the Web Server request must be authenticated
+        http.authorizeRequests().anyRequest().authenticated();
+
+        // Use AuthenticationEntryPoint to authenticate user/password
+        http.httpBasic().authenticationEntryPoint(authEntryPoint);
+    }
+
+
+    // Create 2 users for In memory authentication
     //@Override
    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
@@ -31,12 +54,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-    // Secure the endpoins with HTTP Basic authentication
-    @Override
 
-*/
 
-@Bean
+// Below is required for JDBC authentication.
+/*@Bean
    public DaoAuthenticationProvider authententicationProvider(){
     DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
     daoAuthenticationProvider.setUserDetailsService(personUserDetailsService);
@@ -44,21 +65,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 return daoAuthenticationProvider;
 }
 
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
-        auth.authenticationProvider(authententicationProvider());
-    }
+    auth.authenticationProvider(authententicationProvider());
+}*/
 
-    protected void configure(HttpSecurity http) throws Exception {
-
-        http
-                //HTTP Basic authentication
-                .httpBasic()
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/person").hasRole("USER")
-                .and()
-                .csrf().disable()
-                .formLogin().disable();
-    }
 }
