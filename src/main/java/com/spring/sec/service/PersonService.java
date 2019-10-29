@@ -2,7 +2,9 @@ package com.spring.sec.service;
 
 import java.util.List;
 
-import com.spring.sec.model.Person;
+import com.spring.sec.entity.AuthGroup;
+import com.spring.sec.entity.Person;
+import com.spring.sec.repository.AuthGroupRepository;
 import com.spring.sec.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

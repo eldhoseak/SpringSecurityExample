@@ -2,7 +2,7 @@ package com.spring.sec.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.spring.sec.model.Person;
+import com.spring.sec.entity.Person;
 
 import java.util.List;
 

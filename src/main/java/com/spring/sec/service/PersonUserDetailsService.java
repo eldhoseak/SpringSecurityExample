@@ -1,21 +1,31 @@
 package com.spring.sec.service;
 
 import com.spring.sec.UserDetailsPrincipal;
-import com.spring.sec.model.User;
+import com.spring.sec.entity.AuthGroup;
+import com.spring.sec.entity.User;
+import com.spring.sec.repository.AuthGroupRepository;
 import com.spring.sec.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PersonUserDetailsService implements UserDetailsService {
 
     private UserRepository userRespository;
 
-    public PersonUserDetailsService(UserRepository userRespository){
+    @Autowired
+    AuthGroupRepository authGroupRepository;
+
+
+    public PersonUserDetailsService(UserRepository userRespository,  AuthGroupRepository authGroupRepository){
         super();
      this.userRespository = userRespository;
+     this.authGroupRepository= authGroupRepository;
     }
 
 
@@ -27,6 +37,8 @@ public class PersonUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User name not found");
         }
 
-        return new UserDetailsPrincipal(user);
+        List<AuthGroup> authGroups = this.authGroupRepository.findByUserName(userName);
+
+        return new UserDetailsPrincipal(user, authGroups);
     }
 }

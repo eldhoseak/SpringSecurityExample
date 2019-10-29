@@ -7,9 +7,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.GrantedAuthoritiesContainer;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -17,12 +21,13 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * This class contains the configurations for 2 authentication tyopes in Spring.
  * In memory authentication - to test it uncomment the methos from line 48
  * Jdbc authentication- to test comment, in memry auth configuration and uncomment
- * code from line 59.
+ * code from line 59. This has user role based authorization.
  */
 
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -45,7 +50,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // Create 2 users for In memory authentication
     //@Override
-   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+ protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
         auth.inMemoryAuthentication()
                 .withUser("user").password("{noop}password").roles("USER")
@@ -56,18 +61,28 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-// Below is required for JDBC authentication.
+// Below is required for JDBC authentication, with user roles.
 /*@Bean
    public DaoAuthenticationProvider authententicationProvider(){
     DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
     daoAuthenticationProvider.setUserDetailsService(personUserDetailsService);
     daoAuthenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+    daoAuthenticationProvider.setAuthoritiesMapper(mapper());
 return daoAuthenticationProvider;
 }
 
-protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+@Bean
+    GrantedAuthoritiesMapper mapper(){
 
-    auth.authenticationProvider(authententicationProvider());
-}*/
+    SimpleAuthorityMapper simpleAuthorityMapper = new SimpleAuthorityMapper();
+    simpleAuthorityMapper.setConvertToUpperCase(true);
+    simpleAuthorityMapper.setDefaultAuthority("USER");
+    return simpleAuthorityMapper;
+}
+
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth.authenticationProvider(authententicationProvider());
+    }*/
 
 }
