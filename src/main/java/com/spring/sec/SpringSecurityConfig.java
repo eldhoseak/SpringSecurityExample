@@ -11,9 +11,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.GrantedAuthoritiesContainer;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -45,12 +47,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Use AuthenticationEntryPoint to authenticate user/password
         http.httpBasic().authenticationEntryPoint(authEntryPoint);
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
 
     // Create 2 users for In memory authentication
     //@Override
- protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+ /*protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
         auth.inMemoryAuthentication()
                 .withUser("user").password("{noop}password").roles("USER")
@@ -58,15 +61,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("admin").password("{noop}password").roles("USER", "ADMIN");
 
     }
-
+*/
 
 
 // Below is required for JDBC authentication, with user roles.
-/*@Bean
+@Bean
    public DaoAuthenticationProvider authententicationProvider(){
     DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
     daoAuthenticationProvider.setUserDetailsService(personUserDetailsService);
-    daoAuthenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+    daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
     daoAuthenticationProvider.setAuthoritiesMapper(mapper());
 return daoAuthenticationProvider;
 }
@@ -83,6 +86,14 @@ return daoAuthenticationProvider;
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
         auth.authenticationProvider(authententicationProvider());
-    }*/
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+
+    // encoded 'password' as password.
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        return bCryptPasswordEncoder;
+    }
 
 }
